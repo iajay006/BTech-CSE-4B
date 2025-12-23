@@ -2,13 +2,80 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Attendance Management</title>
+  <title>BTech CSE 4B</title>
   <style>
     body {
       font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-      background: #eef2f7;
       margin: 0;
+      padding: 0;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: #1e1e2f;
+    }
+
+    /* Login Box */
+    .login-box {
+      background: #2c2c3c;
+      padding: 40px;
+      border-radius: 15px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+      text-align: center;
+      width: 350px;
+    }
+    .login-box h2 {
+      color: #fff;
+      margin-bottom: 20px;
+    }
+    .login-box input[type="text"],
+    .login-box input[type="password"] {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      border: none;
+      border-radius: 8px;
+      outline: none;
+    }
+    .login-box .options {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 10px 0;
+      font-size: 14px;
+      color: #fff;
+    }
+    .login-box .options label {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .login-box .options a {
+      color: red;
+      text-decoration: none;
+    }
+    .login-box button {
+      background: #28a745;
+      color: #fff;
+      border: none;
+      padding: 12px;
+      width: 100%;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    .login-box button:hover {
+      background: #218838;
+    }
+
+    /* Attendance Page */
+    #attendancePage {
+      display: none;
+      width: 100%;
+      height: 100%;
       padding: 20px;
+      background: #eef2f7;
+      overflow-y: auto;
     }
     h2 {
       text-align: center;
@@ -71,6 +138,7 @@
       border: none;
       cursor: pointer;
     }
+    .btn-small:hover { opacity: 0.8; }
     .btn-present-active { background: #28a745; color: white; }
     .btn-absent-active { background: #dc3545; color: white; }
     .actions {
@@ -80,35 +148,104 @@
   </style>
 </head>
 <body>
-<h2>Attendance Management System</h2>
 
-<div class="table-container">
-  <table id="attendanceTable">
-    <thead>
-      <tr>
-        <th><input type="checkbox" id="selectAllSNo"> S No</th>
-        <th><input type="checkbox" id="selectAllName"> Name</th>
-        <th><input type="checkbox" id="selectAllEnroll"> Enroll. Number</th>
-        <th><input type="checkbox" id="selectAllRoll"> 4 Digit Roll</th>
-        <th><input type="checkbox" id="selectAllAttendance"> Attendance</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-  </table>
+  <!-- Login Page -->
+  <div id="loginPage" class="login-box">
+    <h2>Login</h2>
+    <input type="text" id="userid" placeholder="User ID">
+    <input type="password" id="password" placeholder="Password">
+
+    <div class="options">
+  <label for="remember">
+    <input type="checkbox" id="remember" name="remember">
+    Remember me
+  </label>
+
+  <a
+    href="https://wa.me/918340731401?text=Please%20Give%20me%20User%20ID%20and%20Password%20%232025"
+    target="_blank"
+    rel="noopener noreferrer"
+  >
+    Contact Ajay
+  </a>
 </div>
 
-<div class="actions">
-  <button class="btn present" onclick="filterRows('P')">Present</button>
-  <button class="btn absent" onclick="filterRows('A')">Absent</button>
-  <button class="btn copy" onclick="copySelected()">Copy</button>
-  <button class="btn clear" onclick="clearFilter()">Clear</button>
-  <button class="btn markAbsent" onclick="markAll('A')">Mark Absent</button>
-  <button class="btn markPresent" onclick="markAll('P')">Mark Present</button>
-</div>
+    
+    <button onclick="login()">LOGIN</button>
+  </div>
+
+  <!-- Attendance Page -->
+  <div id="attendancePage">
+    <h2>Attendance Management System</h2>
+    <div class="table-container">
+      <table id="attendanceTable">
+        <thead>
+          <tr>
+            <th><input type="checkbox" id="selectAllSNo"> S No</th>
+            <th><input type="checkbox" id="selectAllName"> Name</th>
+            <th><input type="checkbox" id="selectAllEnroll"> Enroll. Number</th>
+            <th><input type="checkbox" id="selectAllRoll"> 3 Digit Roll</th>
+            <th><input type="checkbox" id="selectAllAttendance"> Attendance</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <div class="actions">
+      <button class="btn present" onclick="filterRows('P')">Present</button>
+      <button class="btn absent" onclick="filterRows('A')">Absent</button>
+      <button class="btn copy" onclick="copySelected()">Copy</button>
+      <button class="btn clear" onclick="clearFilter()">Clear</button>
+      <button class="btn markAbsent" onclick="markAll('A')">Mark Absent</button>
+      <button class="btn markPresent" onclick="markAll('P')">Mark Present</button>
+    </div>
+  </div>
 
 <script>
+  // Load saved credentials if available
+  window.onload = function () {
+    const savedUser = localStorage.getItem("userid");
+    const savedPass = localStorage.getItem("password");
+    if (savedUser && savedPass) {
+      document.getElementById("userid").value = savedUser;
+      document.getElementById("password").value = savedPass;
+      document.getElementById("remember").checked = true;
+    }
+  };
+
+  // ========== LOGIN ==========
+  function login() {
+    const userId = document.getElementById("userid").value;
+    const password = document.getElementById("password").value;
+    const remember = document.getElementById("remember").checked;
+
+    const credentials = [
+      { id: "iajay006", pass: "AjayRana#2025" },
+    ];
+
+    const valid = credentials.some(
+      cred => cred.id === userId && cred.pass === password
+    );
+
+    if (valid) {
+      if (remember) {
+        localStorage.setItem("userid", userId);
+        localStorage.setItem("password", password);
+      } else {
+        localStorage.removeItem("userid");
+        localStorage.removeItem("password");
+      }
+      document.getElementById("loginPage").style.display = "none";
+      document.getElementById("attendancePage").style.display = "block";
+    } else {
+      alert("❌ Invalid User ID or Password!");
+    }
+  }
+
+  // ========== ATTENDANCE ==========
   const tbody = document.querySelector("#attendanceTable tbody");
-  const students = [
+
+const students = [
 { sno: 1,  name: "Adarsh Pratap", enroll: "A35705223133", roll: "3133", attendance: "" },
 
 { sno: 2,  name: "Bishu Singh", enroll: "A35705223175", roll: "3175", attendance: "" },
@@ -214,6 +351,7 @@
 { sno: 52, name: "DEEPAK KUMAR", enroll: "A35705224212", roll: "4212", attendance: "" }
   ];
 
+
   let currentFilter = "";
 
   function renderTable() {
@@ -228,10 +366,14 @@
         <td>
           <button class="btn-small ${st.attendance==='P'?'btn-present-active':''}" onclick="markAttendance(${idx}, 'P')">P</button>
           <button class="btn-small ${st.attendance==='A'?'btn-absent-active':''}" onclick="markAttendance(${idx}, 'A')">A</button>
-        </td>`;
+        </td>
+      `;
       if (st.attendance === "P") tr.classList.add("presentRow");
       if (st.attendance === "A") tr.classList.add("absentRow");
-      if (currentFilter && st.attendance !== currentFilter) tr.style.display = "none";
+
+      if (currentFilter && st.attendance !== currentFilter) {
+        tr.style.display = "none";
+      }
       tbody.appendChild(tr);
     });
   }
@@ -249,6 +391,7 @@
   function clearFilter() {
     currentFilter = "";
     renderTable();
+    document.querySelectorAll("thead input[type='checkbox']").forEach(cb => cb.checked = false);
   }
 
   function markAll(status) {
@@ -257,10 +400,37 @@
   }
 
   function copySelected() {
-    alert("Copy feature ready");
+    let selectedCols = {
+      sno: document.getElementById("selectAllSNo").checked,
+      name: document.getElementById("selectAllName").checked,
+      enroll: document.getElementById("selectAllEnroll").checked,
+      roll: document.getElementById("selectAllRoll").checked,
+      attendance: document.getElementById("selectAllAttendance").checked
+    };
+
+    let text = "";
+    students.forEach(st => {
+      if (currentFilter && st.attendance !== currentFilter) return;
+      let row = [];
+      if (selectedCols.sno) row.push(st.sno);
+      if (selectedCols.name) row.push(st.name);
+      if (selectedCols.enroll) row.push(st.enroll);
+      if (selectedCols.roll) row.push(st.roll);
+      if (selectedCols.attendance) row.push(st.attendance);
+      text += row.join(" ") + "\n";
+    });
+
+    if (text.trim() === "") {
+      alert("No data to copy!");
+      return;
+    }
+    navigator.clipboard.writeText(text).then(() => {
+      alert("Copied filtered data to clipboard!");
+    });
   }
 
   renderTable();
 </script>
+
 </body>
 </html>

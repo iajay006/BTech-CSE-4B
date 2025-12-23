@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Attendance Management</title>
+  <style>
+    body {
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      background: #eef2f7;
+      margin: 0;
+      padding: 20px;
+    }
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      font-size: 28px;
+      color: #333;
+    }
+    .table-container {
+      max-width: 1000px;
+      margin: auto;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+      overflow: hidden;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    thead {
+      background: #4a90e2;
+      color: white;
+      position: sticky;
+      top: 0;
+      z-index: 2;
+    }
+    th, td {
+      padding: 12px;
+      text-align: center;
+      border-bottom: 1px solid #ddd;
+    }
+    tbody tr:hover {
+      background: #f9f9f9;
+    }
+    .btn {
+      padding: 10px 18px;
+      margin: 8px;
+      border: none;
+      border-radius: 25px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: 0.3s;
+    }
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+    .present { background: #28a745; color: white; }
+    .absent { background: #dc3545; color: white; }
+    .copy { background: #007bff; color: white; }
+    .clear { background: #fd7e14; color: white; }
+    .markAbsent { background: #6c757d; color: white; }
+    .markPresent { background: #20c997; color: white; }
+    tr.presentRow { background: #d4edda; }
+    tr.absentRow { background: #f8d7da; }
+    .btn-small {
+      padding: 6px 10px;
+      margin: 0 2px;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+    }
+    .btn-present-active { background: #28a745; color: white; }
+    .btn-absent-active { background: #dc3545; color: white; }
+    .actions {
+      text-align: center;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+<h2>Attendance Management System</h2>
+
+<div class="table-container">
+  <table id="attendanceTable">
+    <thead>
+      <tr>
+        <th><input type="checkbox" id="selectAllSNo"> S No</th>
+        <th><input type="checkbox" id="selectAllName"> Name</th>
+        <th><input type="checkbox" id="selectAllEnroll"> Enroll. Number</th>
+        <th><input type="checkbox" id="selectAllRoll"> 4 Digit Roll</th>
+        <th><input type="checkbox" id="selectAllAttendance"> Attendance</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+</div>
+
+<div class="actions">
+  <button class="btn present" onclick="filterRows('P')">Present</button>
+  <button class="btn absent" onclick="filterRows('A')">Absent</button>
+  <button class="btn copy" onclick="copySelected()">Copy</button>
+  <button class="btn clear" onclick="clearFilter()">Clear</button>
+  <button class="btn markAbsent" onclick="markAll('A')">Mark Absent</button>
+  <button class="btn markPresent" onclick="markAll('P')">Mark Present</button>
+</div>
+
+<script>
+  const tbody = document.querySelector("#attendanceTable tbody");
+  const students = [
+    { sno: 1, name: "Ajay Rana", enroll: "A35705224110", roll: "4110", attendance: "" }
+  ];
+
+  let currentFilter = "";
+
+  function renderTable() {
+    tbody.innerHTML = "";
+    students.forEach((st, idx) => {
+      let tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${st.sno}</td>
+        <td>${st.name}</td>
+        <td>${st.enroll}</td>
+        <td>${st.roll}</td>
+        <td>
+          <button class="btn-small ${st.attendance==='P'?'btn-present-active':''}" onclick="markAttendance(${idx}, 'P')">P</button>
+          <button class="btn-small ${st.attendance==='A'?'btn-absent-active':''}" onclick="markAttendance(${idx}, 'A')">A</button>
+        </td>`;
+      if (st.attendance === "P") tr.classList.add("presentRow");
+      if (st.attendance === "A") tr.classList.add("absentRow");
+      if (currentFilter && st.attendance !== currentFilter) tr.style.display = "none";
+      tbody.appendChild(tr);
+    });
+  }
+
+  function markAttendance(index, status) {
+    students[index].attendance = status;
+    renderTable();
+  }
+
+  function filterRows(type) {
+    currentFilter = type;
+    renderTable();
+  }
+
+  function clearFilter() {
+    currentFilter = "";
+    renderTable();
+  }
+
+  function markAll(status) {
+    students.forEach(st => st.attendance = status);
+    renderTable();
+  }
+
+  function copySelected() {
+    alert("Copy feature ready");
+  }
+
+  renderTable();
+</script>
+</body>
+</html>
